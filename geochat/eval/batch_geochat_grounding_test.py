@@ -130,8 +130,8 @@ def eval_model(args):
             ans_file.write(json.dumps({
                                     "image_id": anns[i+k]['filename'],
                                     "answer": output,
-                                    "ground_truth": anns[i+k]['objects']['bndbox'],
-                                    "question":anns[i+k]['objects']['description'],                          
+                                    "ground_truth": anns[i+k]['objects'][0]['bndbox'],
+                                    "question":anns[i+k]['objects'][0]['description'],                          
                                     }) + "\n")
             count=count+1
             ans_file.flush()
