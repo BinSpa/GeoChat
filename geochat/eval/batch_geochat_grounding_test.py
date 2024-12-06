@@ -86,7 +86,7 @@ def eval_model(args):
             image_file = anns[j]['filename']
 
         
-            qs = "[grounding]" + "Give me the location of " + anns[j]['objects']['description'] + ". Please return the answer in the format of [xmin, ymin, xmax, ymax]."
+            qs = "[grounding]" + "Give me the location of " + anns[j]['objects'][0]['description'] + ". Please return the answer in the format of [xmin, ymin, xmax, ymax]."
 
             if model.config.mm_use_im_start_end:
                 qs = DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN + DEFAULT_IM_END_TOKEN + '\n' + qs
