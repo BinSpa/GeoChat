@@ -113,7 +113,7 @@ def eval_model(args):
 
         final_input_list = [torch.cat((torch.zeros((1,max_length - tensor.size(1)), dtype=tensor.dtype,device=tensor.get_device()), tensor),dim=1) for tensor in input_batch]
         final_input_tensors=torch.cat(final_input_list,dim=0)
-        image_tensor_batch = image_processor.preprocess(image_folder, do_resize=True, size ={'height': 504, 'width': 504}, do_center_crop=False, return_tensors='pt')['pixel_values']
+        image_tensor_batch = image_processor.preprocess(image_folder,crop_size ={'height': 504, 'width': 504},size = {'shortest_edge': 504}, return_tensors='pt')['pixel_values']
         with torch.inference_mode():
             output_ids = model.generate( final_input_tensors, images=image_tensor_batch.half().cuda(), do_sample=False , temperature=args.temperature, top_p=args.top_p, num_beams=1, max_new_tokens=256,length_penalty=2.0, use_cache=True)
 
