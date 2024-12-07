@@ -60,11 +60,11 @@ def parse_xml(file_path):
         'objects': objects
     }
 
-def Read_TFile(tfile_path, ann_path, dataset='dior_rsvg'):
+def Read_TFile(tfile_path, ann_path, data_path, dataset='dior_rsvg'):
     with open(tfile_path, 'r') as file:
         lines = file.readlines()
     
-    ann_names = sorted(os.listdir(os.path.join(args.data_path, args.annotation_path)))
+    ann_names = sorted(os.listdir(os.path.join(data_path, ann_path)))
     test_nums = [int(line.strip()) for line in lines]
 
     xml_names = [ann_names[i] for i in test_nums if i < len(ann_names)]
@@ -81,7 +81,7 @@ def eval_model(args):
     ans_file = open(answers_file, "w")
 
     # read annotation files for DIOR-RSVG
-    ann_names = Read_TFile(args.tfile_path)    
+    ann_names = Read_TFile(args.tfile_path, args.annotation_path, args.data_path)    
     anns = []
     for name in ann_names:
         ann_path = os.path.join(os.path.join(args.data_path, args.annotation_path), name)
