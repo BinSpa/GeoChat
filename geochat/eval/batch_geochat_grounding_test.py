@@ -64,6 +64,7 @@ def Read_TFile(tfile_path, dataset='dior_rsvg'):
     with open(tfile_path, 'r') as file:
         lines = file.readlines()
     
+    lines = [str(int(line)+1) for line in lines]
     padded_numbers = [line.strip().zfill(5) for line in lines]
     xml_names = [number+'.xml' for number in padded_numbers]
 
