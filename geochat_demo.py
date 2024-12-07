@@ -235,7 +235,7 @@ used_colors = colors
 def visualize_all_bbox_together(image, generation):
     if image is None:
         return None, ''
-
+    # decode generation
     generation = html.unescape(generation)
 
     image_width, image_height = image.size

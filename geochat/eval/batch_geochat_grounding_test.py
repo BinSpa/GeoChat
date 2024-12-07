@@ -60,6 +60,15 @@ def parse_xml(file_path):
         'objects': objects
     }
 
+def Read_TFile(tfile_path, dataset='dior_rsvg'):
+    with open(tfile_path, 'r') as file:
+        lines = file.readlines()
+    
+    padded_numbers = [line.strip().zfill(5) for line in lines]
+    xml_names = [number+'.xml' for number in padded_numbers]
+
+    return xml_names
+
 def eval_model(args):
     disable_torch_init()
     model_path = os.path.expanduser(args.model_path)
@@ -70,7 +79,7 @@ def eval_model(args):
     ans_file = open(answers_file, "w")
 
     # read annotation files for DIOR-RSVG
-    ann_names = os.listdir(os.path.join(args.data_path, args.annotation_path))
+    ann_names = Read_TFile(args.tfile_path)    
     anns = []
     for name in ann_names:
         ann_path = os.path.join(os.path.join(args.data_path, args.annotation_path), name)
@@ -86,9 +95,9 @@ def eval_model(args):
             image_file = anns[j]['filename']
 
         
-            qs = "Give bounding box for " + anns[j]['objects'][0]['description'] + "."
+            qs = "Give bounding box for " + anns[j]['objects'][0]['description'].lower() + "."
             print(qs)
-            
+
             if model.config.mm_use_im_start_end:
                 qs = DEFAULT_IM_START_TOKEN + DEFAULT_IMAGE_TOKEN + DEFAULT_IM_END_TOKEN + '\n' + qs
             else:
@@ -144,6 +153,7 @@ if __name__ == "__main__":
     parser.add_argument("--model-path", type=str, default="/data1/gyl/RS_Code/geochat-7B")
     parser.add_argument("--model-base", type=str, default=None)
     parser.add_argument("--data-path", type=str, default="/data1/gyl/RS_DATASET/DIOR-RSVG")
+    parser.add_argument("--tfile-path", type=str, default="/data1/gyl/RS_DATASET/DIOR-RSVG/test.txt")
     parser.add_argument("--annotation-path", type=str, default="Annotations/")
     parser.add_argument("--image-folder", type=str, default="/data1/gyl/RS_DATASET/DIOR-RSVG/JPEGImages")
     parser.add_argument("--question-file", type=str, default="tables/question.jsonl")
