@@ -60,13 +60,14 @@ def parse_xml(file_path):
         'objects': objects
     }
 
-def Read_TFile(tfile_path, dataset='dior_rsvg'):
+def Read_TFile(tfile_path, ann_path, dataset='dior_rsvg'):
     with open(tfile_path, 'r') as file:
         lines = file.readlines()
     
-    lines = [str(int(line)+1) for line in lines]
-    padded_numbers = [line.strip().zfill(5) for line in lines]
-    xml_names = [number+'.xml' for number in padded_numbers]
+    ann_names = sorted(os.listdir(os.path.join(args.data_path, args.annotation_path)))
+    test_nums = [int(line.strip()) for line in lines]
+
+    xml_names = [ann_names[i] for i in test_nums if i < len(ann_names)]
 
     return xml_names
 
