@@ -148,7 +148,8 @@ def eval_model(args):
             image = Image.open(os.path.join(args.image_folder, image_file))
 
             if args.test_mode == "aug":
-                aug_img_names = os.listdir(args.aug_path)[:4000]
+                aug_img_names = os.listdir(args.aug_path)
+                print(len(aug_img_names))
                 aug_img_names = [os.path.join(args.aug_path, aug_img_name) for aug_img_name in aug_img_names]
                 image = Test_Aug(image, anns[j], aug_img_names)
 
