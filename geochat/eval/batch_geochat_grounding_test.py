@@ -106,6 +106,7 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     xmin, ymin, xmax, ymax = object_location["xmin"], object_location["ymin"], object_location["xmax"], object_location["ymax"]
     # print("xmin:{}, ymin:{}, xmax:{}, ymax:{}".format(xmin, ymin, xmax, ymax))
     image = np.array(image)
+    print(image.shape)
     cropped_image[ymin:ymax, xmin:xmax] = image[ymin:ymax, xmin:xmax]
     return cropped_image
 
