@@ -80,20 +80,20 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     # annotation: the annotation for current image.
     # aug_path: the natural images path to augment the rs image.
     # the augment image is from coco, (460, 640, 3)
-    images = []
+    aug_images = []
     # 随机读取四个图像
-    while len(images) < 4:
+    while len(aug_images) < 4:
         aug_img_name = random.sample(aug_img_names, 1)
-        image = cv2.imread(aug_img_name[0])
-        if image is not None:
-            image = cv2.resize(image, (400, 400))
-            images.append(image)
+        aug_image = cv2.imread(aug_img_name[0])
+        if aug_image is not None:
+            aug_image = cv2.resize(image, (400, 400))
+            aug_images.append(aug_image)
 
-    random.shuffle(images)
-    h, w, _ = images[0].shape
+    random.shuffle(aug_images)
+    h, w, _ = aug_images[0].shape
     # 拼接图像
-    top_row = np.hstack((images[0], images[1]))
-    bot_row = np.hstack((images[2], images[3]))
+    top_row = np.hstack((aug_images[0], aug_images[1]))
+    bot_row = np.hstack((aug_images[2], aug_images[3]))
     combined_image = np.vstack((top_row, bot_row))
     # 获取拼接后的中心并进行中心剪裁
     combined_h, combined_w, _ = combined_image.shape
@@ -104,9 +104,7 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     # 把遥感图像的grounding区域直接移动到拼接后的图像上来
     object_location = annotation['objects'][0]['bndbox']
     xmin, ymin, xmax, ymax = object_location["xmin"], object_location["ymin"], object_location["xmax"], object_location["ymax"]
-    # print("xmin:{}, ymin:{}, xmax:{}, ymax:{}".format(xmin, ymin, xmax, ymax))
     image = np.array(image)
-    print(image.shape)
     cropped_image[ymin:ymax, xmin:xmax] = image[ymin:ymax, xmin:xmax]
     return cropped_image
 
