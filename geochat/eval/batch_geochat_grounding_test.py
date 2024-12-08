@@ -80,8 +80,14 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     # annotation: the annotation for current image.
     # aug_path: the natural images path to augment the rs image.
     # the augment image is from coco, (460, 640, 3)
-    aug_img_names = random.sample(aug_img_names, 4)
-    images = [cv2.imread(img_path) for img_path in aug_img_names]
+    images = []
+    # 随机读取四个图像
+    while len(images) < 4:
+        aug_img_name = random.sample(aug_img_names, 1)
+        image = cv2.imread(aug_img_name)
+        if image is not None:
+            images.append(image)
+
     images = [image[:400, :400] for image in images]
 
     random.shuffle(images)
@@ -91,7 +97,7 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     bot_row = np.hstack((images[2], images[3]))
     combined_image = np.vstack((top_row, bot_row))
     # 获取拼接后的中心并进行中心剪裁
-    combined_h, combined_w = combined_image.shape
+    combined_h, combined_w, _ = combined_image.shape
     crop_h, crop_w = crop_size
     start_h = (combined_h - crop_h) // 2
     start_w = (combined_w - crop_w) // 2
