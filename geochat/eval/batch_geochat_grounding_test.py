@@ -82,6 +82,7 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     # the augment image is from coco, (460, 640, 3)
     aug_img_names = random.sample(aug_img_names, 4)
     images = [cv2.imread(img_path) for img_path in aug_img_names]
+    images = [image[:400, :400] for image in images]
 
     random.shuffle(images)
     h, w, _ = images[0].shape
