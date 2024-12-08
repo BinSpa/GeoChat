@@ -86,7 +86,7 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
         aug_img_name = random.sample(aug_img_names, 1)
         aug_image = cv2.imread(aug_img_name[0])
         if aug_image is not None:
-            aug_image = cv2.resize(image, (400, 400))
+            aug_image = cv2.resize(aug_image, (400, 400))
             aug_images.append(aug_image)
 
     random.shuffle(aug_images)
