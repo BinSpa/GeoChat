@@ -97,6 +97,7 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     combined_image = np.vstack((top_row, bot_row))
     # 获取拼接后的中心并进行中心剪裁
     combined_h, combined_w, _ = combined_image.shape
+    print("h:{}; w:{}".format(combined_h, combined_w))
     crop_h, crop_w = crop_size
     start_h = (combined_h - crop_h) // 2
     start_w = (combined_w - crop_w) // 2
@@ -154,7 +155,6 @@ def eval_model(args):
 
             if args.test_mode == "aug":
                 aug_img_names = os.listdir(args.aug_path)
-                print(len(aug_img_names))
                 aug_img_names = [os.path.join(args.aug_path, aug_img_name) for aug_img_name in aug_img_names]
                 image = Test_Aug(image, anns[j], aug_img_names)
 
