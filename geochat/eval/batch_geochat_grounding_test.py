@@ -14,6 +14,9 @@ from geochat.mm_utils import tokenizer_image_token, get_model_name_from_path, Ke
 from PIL import Image
 import math
 import xml.etree.ElementTree as ET
+import random
+import cv2
+import numpy as np
 
 def parse_xml(file_path):
     tree = ET.parse(file_path)
@@ -61,6 +64,7 @@ def parse_xml(file_path):
     }
 
 def Read_TFile(tfile_path, ann_path, data_path, dataset='dior_rsvg'):
+    # read test files for dataset
     with open(tfile_path, 'r') as file:
         lines = file.readlines()
     
@@ -70,6 +74,33 @@ def Read_TFile(tfile_path, ann_path, data_path, dataset='dior_rsvg'):
     xml_names = [ann_names[i] for i in test_nums if i < len(ann_names)]
 
     return xml_names
+
+def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
+    # image: PIL.Image.
+    # annotation: the annotation for current image.
+    # aug_path: the natural images path to augment the rs image.
+    # the augment image is from coco, (460, 640, 3)
+    aug_img_names = random.sample(aug_img_names, 4)
+    images = [cv2.imread(img_path) for img_path in aug_img_names]
+
+    random.shuffle(images)
+    h, w, _ = images[0].shape
+    # 拼接图像
+    top_row = np.hstack((images[0], images[1]))
+    bot_row = np.hstack((images[2], images[3]))
+    combined_image = np.vstack((top_row, bot_row))
+    # 获取拼接后的中心并进行中心剪裁
+    combined_h, combined_w = combined_image.shape
+    crop_h, crop_w = crop_size
+    start_h = (combined_h - crop_h) // 2
+    start_w = (combined_w - crop_w) // 2
+    cropped_image = combined_image[start_h:start_h+crop_h, start_w:start_w+crop_w]
+    # 把遥感图像的grounding区域直接移动到拼接后的图像上来
+    object_location = annotation['objects'][0]['bndbox']
+    xmin, ymin, xmax, ymax = object_location["xmin"], object_location["ymin"], object_location["xmax"], object_location["ymax"]
+    cropped_image[ymin:ymax, xmin:xmax] = image[ymin:ymax, xmin:xmax]
+    return cropped_image
+
 
 def eval_model(args):
     disable_torch_init()
@@ -115,6 +146,11 @@ def eval_model(args):
 
             image = Image.open(os.path.join(args.image_folder, image_file))
 
+            if args.test_mode == "aug":
+                aug_img_names = os.listdir(args.aug_path)[:4000]
+                aug_img_names = [os.path.join(args.aug_path, aug_img_name) for aug_img_name in aug_img_names]
+                image = Test_Aug(image, anns[j], aug_img_names)
+
             image_folder.append(image)
 
             stop_str = conv.sep if conv.sep_style != SeparatorStyle.TWO else conv.sep2
@@ -158,8 +194,9 @@ if __name__ == "__main__":
     parser.add_argument("--tfile-path", type=str, default="/data1/gyl/RS_DATASET/DIOR-RSVG/test.txt")
     parser.add_argument("--annotation-path", type=str, default="Annotations/")
     parser.add_argument("--image-folder", type=str, default="/data1/gyl/RS_DATASET/DIOR-RSVG/JPEGImages")
+    parser.add_argument("--aug-path", type=str, default="/data1/slg/dataset/coco/train2017")
     parser.add_argument("--question-file", type=str, default="tables/question.jsonl")
-    parser.add_argument("--answers-file", type=str, default="./answer_file/answer.jsonl")
+    parser.add_argument("--answers-file", type=str, default="./answer_file/aug_answer.jsonl")
     parser.add_argument("--conv-mode", type=str, default="llava_v1")
     parser.add_argument("--num-chunks", type=int, default=1)
     parser.add_argument("--chunk-idx", type=int, default=0)
@@ -167,6 +204,7 @@ if __name__ == "__main__":
     parser.add_argument("--top_p", type=float, default=None)
     parser.add_argument("--num_beams", type=int, default=1)
     parser.add_argument("--batch_size",type=int, default=1)
+    parser.add_argument("--test_mode",type=str, default="aug")
     args = parser.parse_args()
 
     eval_model(args)
