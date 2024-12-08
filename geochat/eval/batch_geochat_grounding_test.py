@@ -97,7 +97,6 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     combined_image = np.vstack((top_row, bot_row))
     # 获取拼接后的中心并进行中心剪裁
     combined_h, combined_w, _ = combined_image.shape
-    print("h:{}; w:{}".format(combined_h, combined_w))
     crop_h, crop_w = crop_size
     start_h = (combined_h - crop_h) // 2
     start_w = (combined_w - crop_w) // 2
@@ -105,6 +104,7 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     # 把遥感图像的grounding区域直接移动到拼接后的图像上来
     object_location = annotation['objects'][0]['bndbox']
     xmin, ymin, xmax, ymax = object_location["xmin"], object_location["ymin"], object_location["xmax"], object_location["ymax"]
+    print("xmin:{}, ymin:{}, xmax:{}, ymax:{}".format(xmin, ymin, xmax, ymax))
     cropped_image[ymin:ymax, xmin:xmax] = image[ymin:ymax, xmin:xmax]
     return cropped_image
 
