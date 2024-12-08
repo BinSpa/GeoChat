@@ -84,7 +84,7 @@ def Test_Aug(image, annotation, aug_img_names, crop_size=(800, 800)):
     # 随机读取四个图像
     while len(images) < 4:
         aug_img_name = random.sample(aug_img_names, 1)
-        image = cv2.imread(aug_img_name)
+        image = cv2.imread(aug_img_name[0])
         if image is not None:
             images.append(image)
 
