@@ -85,6 +85,7 @@ def evaluate_jsonl(jsonl_file):
             data = json.loads(line)
 
             # 解析预测框
+            print(data['answer'])
             pred_bbox, pred_angle = parse_answer(data['answer'])
 
             # 解析真实框
