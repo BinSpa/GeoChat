@@ -72,7 +72,7 @@ def calculate_rotated_iou(pred_bbox, pred_angle, gt_bbox):
 
 # 从 answer 中解析预测框和旋转角度
 def parse_answer(answer):
-    values = values[1:-1]
+    answer = answer[1:-1]
     values = [int(v.strip('<>')) for v in answer.split('|')]
     # 返回 (xmin, ymin, xmax, ymax), angle
     return values[:4], values[4]  
