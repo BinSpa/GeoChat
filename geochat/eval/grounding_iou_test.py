@@ -92,10 +92,9 @@ def evaluate_jsonl(jsonl_file):
     iou_scores = []
     total_test, invalid_test, valid_test = 0, 0, 0
     with open(jsonl_file, 'r') as f:
-        total_test = len(f)
         for line in tqdm(f):
             data = json.loads(line)
-
+            total_test += 1
             # 解析预测框
             pred_bbox, pred_angle = parse_answer(data['answer'])
             if pred_bbox == None and pred_angle == None:
