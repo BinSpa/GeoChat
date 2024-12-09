@@ -43,17 +43,17 @@ def rotated_box_to_polygon(center, width, height, angle_degrees):
     return Polygon(rotated_corners)
 
 def transform_prebox(xmin, ymin, xmax, ymax, scale_ratio):
-    xmin = (xmin / 100)*scale_ratio
-    ymin = (ymin / 100)*scale_ratio
-    xmax = (xmax / 100)*scale_ratio
-    ymax = (ymax / 100)*scale_ratio
+    xmin = xmin * scale_ratio
+    ymin = ymin * scale_ratio
+    xmax = xmax * scale_ratio
+    ymax = ymax * scale_ratio
     return int(xmin), int(ymin), int(xmax), int(ymax)
 
 # 计算旋转框和标准框之间的 IoU
 def calculate_rotated_iou(pred_bbox, pred_angle, gt_bbox):
     # 解构预测框和真实框
     pred_xmin, pred_ymin, pred_xmax, pred_ymax = pred_bbox
-    pred_xmin, pred_ymin, pred_xmax, pred_ymax = transform_prebox(pred_xmin, pred_ymin, pred_xmax, pred_ymax, scale_ratio=5.0*1.587)
+    pred_xmin, pred_ymin, pred_xmax, pred_ymax = transform_prebox(pred_xmin, pred_ymin, pred_xmax, pred_ymax, scale_ratio=7.935)
 
     gt_xmin, gt_ymin, gt_xmax, gt_ymax = gt_bbox
 
