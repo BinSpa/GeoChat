@@ -18,6 +18,9 @@ import random
 import cv2
 import numpy as np
 
+seed = 42
+random.seed(seed)
+
 def parse_xml(file_path):
     tree = ET.parse(file_path)
     root = tree.getroot()
