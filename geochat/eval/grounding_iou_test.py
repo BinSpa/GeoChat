@@ -2,6 +2,11 @@ import json
 import numpy as np
 from shapely.geometry import Polygon
 from tqdm import tqdm
+import re
+
+def is_valide_answer_format(answer):
+    pattern = r'^\{\<\d+\>\<\d+\>\<\d+\>\<\d+\>\|\<\d+\>\}$'
+    return re.match(pattern, answer) is not None
 
 # 将标准框转为多边形
 def standard_box_to_polygon(bbox):
@@ -73,27 +78,30 @@ def calculate_rotated_iou(pred_bbox, pred_angle, gt_bbox):
 # 从 answer 中解析预测框和旋转角度
 def parse_answer(answer):
     answer = answer.strip()
-    answer = answer.strip('{}')
-    if '|' in answer:
+    if is_valide_answer_format(answer):
         bbox_part, angle_part = answer.split('|')[0], answer.split('|')[1]
+        bbox_values = [int(v.strip('<>')) for v in bbox_part.split('><')]
+        angle = int(angle_part.strip('<>'))
+        # 返回 (xmin, ymin, xmax, ymax), angle
+        return bbox_values, angle  
     else:
-        bbox_part, angle_part = answer, '0'
-    bbox_values = [int(v.strip('<>')) for v in bbox_part.split('><')]
-    angle = int(angle_part.strip('<>'))
-    # 返回 (xmin, ymin, xmax, ymax), angle
-    return bbox_values, angle  
+        return None, None
 
 # 评估 JSONL 数据中的预测结果
 def evaluate_jsonl(jsonl_file):
     iou_scores = []
-
+    total_test, invalid_test, valid_test = 0, 0, 0
     with open(jsonl_file, 'r') as f:
+        total_test = len(f)
         for line in tqdm(f):
             data = json.loads(line)
 
             # 解析预测框
             pred_bbox, pred_angle = parse_answer(data['answer'])
-
+            if pred_bbox == None and pred_angle == None:
+                invalid_test += 1
+                continue
+            valid_test += 1
             # 解析真实框
             gt_bbox = [
                 data['ground_truth']['xmin'],
@@ -107,6 +115,7 @@ def evaluate_jsonl(jsonl_file):
             iou_scores.append(iou)
 
     # 计算平均 IoU
+    print("total_test:{}, invalid_test:{}, valid_test:{}".format(total_test, invalid_test, valid_test))
     avg_iou = np.mean(iou_scores) if iou_scores else 0.0
     return avg_iou
 
