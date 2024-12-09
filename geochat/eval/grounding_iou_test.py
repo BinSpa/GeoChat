@@ -1,6 +1,7 @@
 import json
 import numpy as np
 from shapely.geometry import Polygon
+from tqdm import tqdm
 
 # 将标准框转为多边形
 def standard_box_to_polygon(bbox):
@@ -36,10 +37,19 @@ def rotated_box_to_polygon(center, width, height, angle_degrees):
 
     return Polygon(rotated_corners)
 
+def transform_prebox(xmin, ymin, xmax, ymax, scale_ratio):
+    xmin = (xmin / 100)*scale_ratio
+    ymin = (ymin / 100)*scale_ratio
+    xmax = (xmax / 100)*scale_ratio
+    ymax = (ymax / 100)*scale_ratio
+    return int(xmin), int(ymin), int(xmax), int(ymax)
+
 # 计算旋转框和标准框之间的 IoU
 def calculate_rotated_iou(pred_bbox, pred_angle, gt_bbox):
     # 解构预测框和真实框
     pred_xmin, pred_ymin, pred_xmax, pred_ymax = pred_bbox
+    pred_xmin, pred_ymin, pred_xmax, pred_ymax = transform_prebox(pred_xmin, pred_ymin, pred_xmax, pred_ymax, scale_ratio=5.0*1.587)
+
     gt_xmin, gt_ymin, gt_xmax, gt_ymax = gt_bbox
 
     # 获取旋转框多边形
@@ -71,7 +81,7 @@ def evaluate_jsonl(jsonl_file):
     iou_scores = []
 
     with open(jsonl_file, 'r') as f:
-        for line in f:
+        for line in tqdm(f):
             data = json.loads(line)
 
             # 解析预测框
