@@ -74,7 +74,7 @@ def calculate_rotated_iou(pred_bbox, pred_angle, gt_bbox):
 def parse_answer(answer):
     answer = answer.strip()
     answer = answer.strip('{}')
-    bbox_part, angle_part = answer.split('|')
+    bbox_part, angle_part = answer.split('|')[0], answer.split('|')[1]
     bbox_values = [int(v.strip('<>')) for v in bbox_part.split('><')]
     angle = int(angle_part.strip('<>'))
     # 返回 (xmin, ymin, xmax, ymax), angle
