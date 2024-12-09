@@ -122,7 +122,7 @@ def evaluate_jsonl(jsonl_file):
 # 示例用法
 if __name__ == "__main__":
     # 替换为你的 JSONL 文件路径
-    jsonl_file = "./answer_file/answer.jsonl"
+    jsonl_file = "./answer_file/aug_answer.jsonl"
 
     avg_iou = evaluate_jsonl(jsonl_file)
     print(f"Average IoU (with rotation): {avg_iou:.4f}")
