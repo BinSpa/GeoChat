@@ -72,10 +72,13 @@ def calculate_rotated_iou(pred_bbox, pred_angle, gt_bbox):
 
 # 从 answer 中解析预测框和旋转角度
 def parse_answer(answer):
-    answer = answer[1:-1]
-    values = [int(v.strip('<>')) for v in answer.split('|')]
+    answer = answer.strip()
+    answer = answer.strip('{}')
+    bbox_part, angle_part = answer.split('|')
+    bbox_values = [int(v.strip('<>')) for v in bbox_part.split('><')]
+    angle = int(angle_part.strip('<>'))
     # 返回 (xmin, ymin, xmax, ymax), angle
-    return values[:4], values[4]  
+    return bbox_values, angle  
 
 # 评估 JSONL 数据中的预测结果
 def evaluate_jsonl(jsonl_file):
